@@ -1,4 +1,4 @@
-name: Build IceRaven Dark Theme (Auto-Release)
+name: Build Firefox Beta OLED Theme (Auto-Release)
 
 on:
   schedule:
@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # --- NEW STEP: Get latest release info from THIS repository ---
       - name: Get latest release info from this repo
         id: this_repo_latest_release
         uses: cardinalby/git-get-release-action@v1
@@ -23,36 +22,41 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           latest: true
-          # Optional: You might want to specify a repository if it's not the current one,
-          # but for checking your own repo, 'owner/repo' isn't usually needed.
-          # If this action ever fails to find a release, its outputs will be empty.
-      # ----------------------------------------------------------------
 
       - name: Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y wget apktool zipalign apksigner jq openjdk-17-jdk
+          
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Get Latest IceRaven ARM64 Release (Upstream)
+          
+      - name: Get Latest Firefox Beta Release (Upstream)
         id: get_upstream_release
         run: |
-          LATEST_RELEASE=$(jq -r '.assets[] | select(.name | contains("arm64") and contains("forkRelease.apk")) | .browser_download_url' < <(curl -s https://api.github.com/repos/fork-maintainers/iceraven-browser/releases/latest))
+          # Mozilla FTP sunucusundaki dizin listesini tarayarak en son Beta sürümünü (örn: 150.0b9) tespit et
+          FENIX_VERSION=$(curl -s https://ftp.mozilla.org/pub/fenix/releases/ | grep -oE '[0-9]+\.[0-9]+b[0-9]+' | sort -V | tail -n 1)
+          
+          # Eğer sistemi sadece belirli bir sürümde (örneğin 150.0b9) tutmak isterseniz üstteki satırı silip aşağıdakini açabilirsiniz:
+          # FENIX_VERSION="150.0b9"
+          
+          # ARM64 APK indirme URL'sini oluştur
+          LATEST_RELEASE="https://ftp.mozilla.org/pub/fenix/releases/${FENIX_VERSION}/android/fenix-${FENIX_VERSION}-android-arm64-v8a/fenix-${FENIX_VERSION}-android-arm64-v8a.apk"
+          
           echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_OUTPUT
-          ICERAVEN_VERSION=$(echo "$LATEST_RELEASE" | sed -E 's/.*iceraven-(.*)-browser.*/\1/')
-          echo "ICERAVEN_VERSION=$ICERAVEN_VERSION" >> $GITHUB_OUTPUT
-          echo "Current upstream IceRaven version: $ICERAVEN_VERSION"
+          echo "FENIX_VERSION=$FENIX_VERSION" >> $GITHUB_OUTPUT
+          echo "Current upstream Firefox Beta version: $FENIX_VERSION"
 
       - name: Check if new version is available
         id: version_check
         run: |
-          UPSTREAM_VERSION="${{ steps.get_upstream_release.outputs.ICERAVEN_VERSION }}"
+          UPSTREAM_VERSION="${{ steps.get_upstream_release.outputs.FENIX_VERSION }}"
           THIS_REPO_VERSION="${{ steps.this_repo_latest_release.outputs.tag_name }}"
 
-          echo "Upstream IceRaven version: $UPSTREAM_VERSION"
+          echo "Upstream Firefox Beta version: $UPSTREAM_VERSION"
           echo "This repository's latest release version: ${THIS_REPO_VERSION:-"No previous release found."}"
 
           if [ "$UPSTREAM_VERSION" != "$THIS_REPO_VERSION" ]; then
@@ -63,41 +67,39 @@ jobs:
             echo "No new version from upstream. Skipping build and release."
           fi
       
-      # --- Conditional steps based on version_check ---
       - name: Download Latest APK
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         run: |
-          wget -q "${{ steps.get_upstream_release.outputs.LATEST_RELEASE }}" -O iceraven.apk
+          wget -q "${{ steps.get_upstream_release.outputs.LATEST_RELEASE }}" -O fenix.apk
+          
       - name: Run Build Script
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         run: bash build.sh
+        
       - name: Sign APK
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         run: |
           echo "${{ secrets.KEYSTORE }}" | base64 -di > keystore.jks
-          apksigner sign --ks keystore.jks --ks-pass pass:${{ secrets.KEYSTORE_PASSPHRASE }} --key-pass pass:${{ secrets.KEY_PASSWORD }} iceraven-patched-signed.apk
+          apksigner sign --ks keystore.jks --ks-pass pass:${{ secrets.KEYSTORE_PASSPHRASE }} --key-pass pass:${{ secrets.KEY_PASSWORD }} fenix-patched-signed.apk
+          
       - name: Upload APK as Artifact
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: iceraven-dark-apk
-          path: iceraven-patched-signed.apk
-      # -------------------------------------------------
+          name: firefox-beta-oled-apk
+          path: fenix-patched-signed.apk
 
       - name: Create Release
         id: create_release
-        # The condition now directly uses the output from the version_check step
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          tag_name: ${{ steps.get_upstream_release.outputs.ICERAVEN_VERSION }}
-          name: IceRaven Dark Theme ${{ steps.get_upstream_release.outputs.ICERAVEN_VERSION }}
+          tag_name: ${{ steps.get_upstream_release.outputs.FENIX_VERSION }}
+          name: Firefox Beta OLED Theme ${{ steps.get_upstream_release.outputs.FENIX_VERSION }}
           body: |
-            Automatic release of IceRaven Dark Theme based on upstream version ${{ steps.get_upstream_release.outputs.ICERAVEN_VERSION }}.
+            Automatic release of Firefox Beta OLED Theme based on upstream version ${{ steps.get_upstream_release.outputs.FENIX_VERSION }}.
             
-            This APK is automatically built and patched for a dark theme.
-          files: iceraven-patched-signed.apk
-
-      # Removed the second "Get latest release info" step, as it's now handled upfront.
+            This APK is automatically built and patched for an AMOLED dark theme.
+          files: fenix-patched-signed.apk
