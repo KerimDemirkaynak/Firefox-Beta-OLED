@@ -19,9 +19,10 @@ jobs:
         id: this_repo_latest_release
         uses: cardinalby/git-get-release-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           latest: true
+          doNotFailIfNotFound: true
 
       - name: Install Dependencies
         run: |
@@ -37,13 +38,8 @@ jobs:
       - name: Get Latest Firefox Beta Release (Upstream)
         id: get_upstream_release
         run: |
-          # Mozilla FTP sunucusundaki dizin listesini tarayarak en son Beta sürümünü (örn: 150.0b9) tespit et
           FENIX_VERSION=$(curl -s https://ftp.mozilla.org/pub/fenix/releases/ | grep -oE '[0-9]+\.[0-9]+b[0-9]+' | sort -V | tail -n 1)
           
-          # Eğer sistemi sadece belirli bir sürümde (örneğin 150.0b9) tutmak isterseniz üstteki satırı silip aşağıdakini açabilirsiniz:
-          # FENIX_VERSION="150.0b9"
-          
-          # ARM64 APK indirme URL'sini oluştur
           LATEST_RELEASE="https://ftp.mozilla.org/pub/fenix/releases/${FENIX_VERSION}/android/fenix-${FENIX_VERSION}-android-arm64-v8a/fenix-${FENIX_VERSION}-android-arm64-v8a.apk"
           
           echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_OUTPUT
@@ -94,7 +90,7 @@ jobs:
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.get_upstream_release.outputs.FENIX_VERSION }}
           name: Firefox Beta OLED Theme ${{ steps.get_upstream_release.outputs.FENIX_VERSION }}
