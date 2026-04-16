@@ -44,8 +44,8 @@ jobs:
           # Sürümün bulunduğu dizin URL'si
           BASE_URL="https://ftp.mozilla.org/pub/fenix/releases/${FENIX_VERSION}/android/fenix-${FENIX_VERSION}-android-arm64-v8a/"
           
-          # Dizin içindeki tam .apk dosya adını bul (sayfa kaynağından çekiyoruz)
-          APK_NAME=$(curl -s "$BASE_URL" | grep -oE 'fenix-[^\"]+\.apk' | head -n 1)
+          # Dizin içindeki tam .apk dosya adını bul (İçinde / olmayanları seçerek klasör adının tekrarını önlüyoruz)
+          APK_NAME=$(curl -s "$BASE_URL" | grep -oE 'fenix-[^/"]+\.apk' | head -n 1)
           
           # Eğer bir sebepten bulamazsa varsayılanı kullanmayı dene
           if [ -z "$APK_NAME" ]; then
