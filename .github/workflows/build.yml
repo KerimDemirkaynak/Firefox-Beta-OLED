@@ -89,8 +89,11 @@ jobs:
       - name: Sign APK
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
         run: |
-          echo "${{ secrets.KEYSTORE }}" | base64 -di > keystore.jks
-          apksigner sign --ks keystore.jks --ks-pass pass:${{ secrets.KEYSTORE_PASSPHRASE }} --key-pass pass:${{ secrets.KEY_PASSWORD }} fenix-patched-signed.apk
+          echo "Geçici imza dosyası (keystore) oluşturuluyor..."
+          keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-alias -storepass password123 -keypass password123 -dname "CN=OLED Theme,O=Custom,C=TR"
+          
+          echo "APK imzalanıyor..."
+          apksigner sign --ks keystore.jks --ks-pass pass:password123 --key-pass pass:password123 fenix-patched-signed.apk
           
       - name: Upload APK as Artifact
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
