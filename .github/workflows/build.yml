@@ -88,12 +88,17 @@ jobs:
         
       - name: Sign APK
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "Geçici imza dosyası (keystore) oluşturuluyor..."
-          keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-alias -storepass password123 -keypass password123 -dname "CN=OLED Theme,O=Custom,C=TR"
+          echo "Keystore GitHub Secrets üzerinden çözülüyor..."
+          echo "$KEYSTORE_BASE64" | base64 --decode > release-key.keystore
           
-          echo "APK imzalanıyor..."
-          apksigner sign --ks keystore.jks --ks-pass pass:password123 --key-pass pass:password123 fenix-patched-signed.apk
+          echo "APK kendi şifrelerimizle imzalanıyor..."
+          apksigner sign --ks release-key.keystore --ks-pass pass:"$STORE_PASSWORD" --key-pass pass:"$KEY_PASSWORD" --ks-key-alias "$KEY_ALIAS" fenix-patched-signed.apk
           
       - name: Upload APK as Artifact
         if: steps.version_check.outputs.NEW_VERSION_AVAILABLE == 'true'
