@@ -19,15 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get latest release info from this repo
-        id: this_repo_latest_release
-        uses: cardinalby/git-get-release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          latest: true
-          doNotFailIfNotFound: true
-
       - name: Get Latest Firefox Beta Release (Upstream)
         id: get_upstream_release
         run: |
@@ -35,21 +26,20 @@ jobs:
           echo "FENIX_VERSION=$FENIX_VERSION" >> $GITHUB_OUTPUT
           echo "Current upstream Firefox Beta version: $FENIX_VERSION"
 
-      - name: Check if new version is available
+      - name: Check if release already exists in this repo
         id: version_check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           UPSTREAM_VERSION="${{ steps.get_upstream_release.outputs.FENIX_VERSION }}"
-          THIS_REPO_VERSION="${{ steps.this_repo_latest_release.outputs.tag_name }}"
-
-          echo "Upstream Firefox Beta version: $UPSTREAM_VERSION"
-          echo "This repository's latest release version: ${THIS_REPO_VERSION:-"No previous release found."}"
-
-          if [ "$UPSTREAM_VERSION" != "$THIS_REPO_VERSION" ]; then
-            echo "NEW_VERSION_AVAILABLE=true" >> $GITHUB_OUTPUT
-            echo "New version available! Proceeding to build phase."
-          else
+          
+          # GitHub'ın kendi CLI aracıyla bu sürüme ait bir release var mı kontrol ediyoruz
+          if gh release view "$UPSTREAM_VERSION" >/dev/null 2>&1; then
             echo "NEW_VERSION_AVAILABLE=false" >> $GITHUB_OUTPUT
-            echo "No new version from upstream. Skipping build and release."
+            echo "Release $UPSTREAM_VERSION already exists in your repo. Skipping build."
+          else
+            echo "NEW_VERSION_AVAILABLE=true" >> $GITHUB_OUTPUT
+            echo "Release $UPSTREAM_VERSION not found! Proceeding to build phase."
           fi
 
   # Stage 2: Parallel Build for Architectures (Matrix)
@@ -119,6 +109,7 @@ jobs:
   # Stage 3: Merge Outputs and Create Release
   release:
     needs: [check_version, build]
+    if: needs.check_version.outputs.NEW_VERSION_AVAILABLE == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Download all APK artifacts
