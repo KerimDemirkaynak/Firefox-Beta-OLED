@@ -1,8 +1,12 @@
 # Firefox Beta OLED  
 
+[English](README.md) ∙ [Türkçe](docs/README/README_TR.md) ∙ [简体中文](docs/README/README_ZH.md)
+
 [![Arch: arm64-v8a](https://img.shields.io/badge/arch-arm64__v8a-blue.svg)](https://en.wikipedia.org/wiki/AArch64)
 [![Arch: armeabi-v7a](https://img.shields.io/badge/arch-armeabi__v7a-green.svg)](https://en.wikipedia.org/wiki/ARM_architecture)
 [![Arch: x86_64](https://img.shields.io/badge/arch-x86__64-orange.svg)](https://en.wikipedia.org/wiki/X86-64)
+
+🌐 **[Official Website](https://kerimdemirkaynak.github.io/Firefox-Beta-OLED)**
 
 This project applies a true AMOLED dark mode theme to [Mozilla Firefox Beta](https://play.google.com/store/apps/details?id=org.mozilla.firefox_beta) for Android, addressing the lack of native OLED-friendly (pitch black) dark mode support in the official browser. Inspired by [Ironfox-OLEDDark](https://github.com/ArtikusHG/Ironfox-OLEDDark), this repository provides an automated, always up-to-date patched version of the browser.
 
