@@ -1,4 +1,4 @@
-name: Build Firefox Beta OLED (Test Mode)
+name: Build Firefox Beta OLED Theme (Auto-Release)
 
 on:
   schedule:
@@ -10,23 +10,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # 1. Aşama: Sadece Sürümü Al (Eski Sürümle Karşılaştırma Yok)
-  get_version:
+  # Stage 1: Version Check
+  check_version:
     runs-on: ubuntu-latest
     outputs:
+      NEW_VERSION_AVAILABLE: ${{ steps.version_check.outputs.NEW_VERSION_AVAILABLE }}
       FENIX_VERSION: ${{ steps.get_upstream_release.outputs.FENIX_VERSION }}
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest release info from this repo
+        id: this_repo_latest_release
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          latest: true
+          doNotFailIfNotFound: true
+
       - name: Get Latest Firefox Beta Release (Upstream)
         id: get_upstream_release
         run: |
-          # Mozilla'dan en son sürüm numarasını çekiyoruz
           FENIX_VERSION=$(curl -s https://ftp.mozilla.org/pub/fenix/releases/ | grep -oE '[0-9]+\.[0-9]+b[0-9]+' | sort -V | tail -n 1)
           echo "FENIX_VERSION=$FENIX_VERSION" >> $GITHUB_OUTPUT
           echo "Current upstream Firefox Beta version: $FENIX_VERSION"
 
-  # 2. Aşama: İlgili Mimariler İçin Paralel Derleme (Matrix) - Şartsız Çalışır
+      - name: Check if new version is available
+        id: version_check
+        run: |
+          UPSTREAM_VERSION="${{ steps.get_upstream_release.outputs.FENIX_VERSION }}"
+          THIS_REPO_VERSION="${{ steps.this_repo_latest_release.outputs.tag_name }}"
+
+          echo "Upstream Firefox Beta version: $UPSTREAM_VERSION"
+          echo "This repository's latest release version: ${THIS_REPO_VERSION:-"No previous release found."}"
+
+          if [ "$UPSTREAM_VERSION" != "$THIS_REPO_VERSION" ]; then
+            echo "NEW_VERSION_AVAILABLE=true" >> $GITHUB_OUTPUT
+            echo "New version available! Proceeding to build phase."
+          else
+            echo "NEW_VERSION_AVAILABLE=false" >> $GITHUB_OUTPUT
+            echo "No new version from upstream. Skipping build and release."
+          fi
+
+  # Stage 2: Parallel Build for Architectures (Matrix)
   build:
-    needs: get_version
+    needs: check_version
+    if: needs.check_version.outputs.NEW_VERSION_AVAILABLE == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -47,7 +76,7 @@ jobs:
 
       - name: Download Latest APK for ${{ matrix.arch }}
         run: |
-          FENIX_VERSION="${{ needs.get_version.outputs.FENIX_VERSION }}"
+          FENIX_VERSION="${{ needs.check_version.outputs.FENIX_VERSION }}"
           BASE_URL="https://ftp.mozilla.org/pub/fenix/releases/${FENIX_VERSION}/android/fenix-${FENIX_VERSION}-android-${{ matrix.arch }}/"
           
           # Dizin içindeki tam .apk dosya adını bul
@@ -78,7 +107,7 @@ jobs:
           apksigner sign --ks release-key.keystore --ks-pass pass:"$STORE_PASSWORD" --key-pass pass:"$KEY_PASSWORD" --ks-key-alias "$KEY_ALIAS" fenix-patched-signed.apk
           
           # APK'yı mimari ismini içerecek şekilde yeniden adlandır
-          FINAL_APK_NAME="fenix-oled-${{ needs.get_version.outputs.FENIX_VERSION }}-${{ matrix.arch }}.apk"
+          FINAL_APK_NAME="fenix-oled-${{ needs.check_version.outputs.FENIX_VERSION }}-${{ matrix.arch }}.apk"
           mv fenix-patched-signed.apk "$FINAL_APK_NAME"
           
       - name: Upload APK as Artifact
@@ -87,9 +116,9 @@ jobs:
           name: firefox-beta-oled-${{ matrix.arch }}
           path: fenix-oled-*.apk
 
-  # 3. Aşama: Çıktıları Birleştirip Sürüm (Release) Oluşturma
+  # Stage 3: Merge Outputs and Create Release
   release:
-    needs: [get_version, build]
+    needs: [check_version, build]
     runs-on: ubuntu-latest
     steps:
       - name: Download all APK artifacts
@@ -104,14 +133,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Testler çakışmasın diye sonuna derleme numarası (run_number) ekledik
-          tag_name: ${{ needs.get_version.outputs.FENIX_VERSION }}-test-${{ github.run_number }}
-          name: Firefox Beta OLED Theme ${{ needs.get_version.outputs.FENIX_VERSION }} (TEST)
+          tag_name: ${{ needs.check_version.outputs.FENIX_VERSION }}
+          name: Firefox Beta OLED Theme ${{ needs.check_version.outputs.FENIX_VERSION }}
           body: |
-            TEST RELEASE: Automatic release of Firefox Beta OLED Theme based on upstream version ${{ needs.get_version.outputs.FENIX_VERSION }}.
+            Automatic release of Firefox Beta OLED Theme based on upstream version ${{ needs.check_version.outputs.FENIX_VERSION }}.
             
-            **Desteklenen Mimariler (Supported Architectures):**
-            * `arm64-v8a` (Modern cihazların çoğu)
-            * `armeabi-v7a` (Eski nesil/32-bit cihazlar)
-            * `x86_64` (Emülatörler ve x86 tabletler)
+            This APK is automatically built and patched for an AMOLED dark theme.
+            
+            **Supported Architectures:**
+            * `arm64-v8a` (Most modern devices)
+            * `armeabi-v7a` (Older/32-bit devices)
+            * `x86_64` (Emulators and x86 tablets)
           files: apks/*.apk
