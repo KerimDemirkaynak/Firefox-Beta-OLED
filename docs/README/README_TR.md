@@ -24,7 +24,7 @@ Firefox'un kararlı (stable) sürümü harika olsa da, Firefox Beta mükemmel bi
 - Mozilla'nın en son web standartlarıyla kusursuz uyumluluk.
 
 ### Kurulum
-1. Bu deponun [Releases](../../../releases) (Sürümler) sayfasına gidin.
+1. Bu deponun [Releases](https://github.com/KerimDemirkaynak/Firefox-Beta-OLED/releases) (Sürümler) sayfasına gidin.
 2. Cihazınızın mimarisine uygun olan `.apk` dosyasını indirin (örn. `fenix-oled-<sürüm>-arm64-v8a.apk`). *Eğer emin değilseniz, neredeyse tüm modern akıllı telefonlar için doğru seçim `arm64-v8a`'dır.*
 3. APK'yı Android cihazınıza kurun (cihaz ayarlarınızdan "Bilinmeyen kaynaklardan yükle" seçeneğini etkinleştirmeniz gerekebilir).
 
