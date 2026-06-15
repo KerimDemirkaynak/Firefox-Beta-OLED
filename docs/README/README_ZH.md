@@ -24,7 +24,7 @@
 - 与 Mozilla 最新的 Web 标准无缝兼容。
 
 ### 安装方法
-1. 前往本仓库的 [Releases](../../../releases) 页面。
+1. 前往本仓库的 [Releases](https://github.com/KerimDemirkaynak/Firefox-Beta-OLED/releases) 页面。
 2. 下载适合您设备架构的 `.apk` 文件（例如 `fenix-oled-<版本号>-arm64-v8a.apk`）。*如果您不确定，对于几乎所有现代智能手机，`arm64-v8a` 是正确的选择。*
 3. 在您的 Android 设备上安装 APK（您可能需要在设备设置中启用“允许安装未知来源的应用”）。
 
