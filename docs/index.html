@@ -6,8 +6,8 @@
     <title data-i18n="page_title">Firefox Beta OLED | True Black Experience</title>
 
     <!-- Dinamik Meta Etiketleri -->
-    <meta id="meta-desc" name="description" content="Android (arm64-v8a) optimized, battery-friendly, auto-updated Firefox Beta with pure #000000 OLED dark theme.">
-    <meta name="keywords" content="firefox, beta, oled, dark mode, android, apk, arm64-v8a, amoled, github, mozilla">
+    <meta id="meta-desc" name="description" content="Android optimized (Multi-Architecture), battery-friendly, auto-updated Firefox Beta with pure #000000 OLED dark theme.">
+    <meta name="keywords" content="firefox, beta, oled, dark mode, android, apk, arm64-v8a, armeabi-v7a, x86_64, amoled, github, mozilla">
     <meta name="author" content="Kerim Demirkaynak">
     
     <!-- Open Graph -->
@@ -42,7 +42,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- Eski Şık Header ve Görünmez Seçici --- */
         .site-header {
             display: flex;
             justify-content: space-between;
@@ -88,7 +87,6 @@
             border-color: #444;
         }
 
-        /* Bu kısım açılır menüyü gizler ama tıklanabilir yapar */
         .lang-pill select {
             position: absolute;
             top: 0;
@@ -100,7 +98,6 @@
             appearance: none;
         }
 
-        /* --- Ana İçerik --- */
         .hero {
             display: flex;
             flex-direction: column;
@@ -131,6 +128,14 @@
             letter-spacing: -0.02em;
         }
 
+        .badge-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
         .badge {
             background: linear-gradient(135deg, rgba(255,149,0,0.15) 0%, rgba(255, 0, 128, 0.15) 100%);
             border: 1px solid rgba(255, 149, 0, 0.3);
@@ -139,7 +144,6 @@
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 20px;
         }
 
         .subtitle {
@@ -190,14 +194,14 @@
         }
 
         .main-content {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px 80px 20px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
         }
 
@@ -263,32 +267,36 @@
             FF Beta OLED
         </a>
         
-        <!-- Yeniden Eski Hap (Pill) Tasarımı -->
         <div class="lang-pill">
             <i class="fa-solid fa-globe"></i> 
             <span id="current-lang-text">EN</span>
             <i class="fa-solid fa-chevron-down" style="font-size: 0.75em; opacity: 0.7;"></i>
             
-            <!-- Görünmez Select -->
             <select id="lang-select" onchange="changeLanguage(this.value)">
                 <option value="en">English (US)</option>
                 <option value="tr">Türkçe</option>
                 <option value="de">Deutsch</option>
                 <option value="es">Español</option>
-                <!-- Dilediğin kadar dil ekleyebilirsin -->
             </select>
         </div>
     </header>
 
     <main class="hero">
         <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Firefox_Beta_logo,_2017.svg" alt="Firefox Beta Logo">
-        <div class="badge" data-i18n="badge">arm64-v8a Build</div>
+        
+        <!-- YENİ: Çoklu mimari rozetleri -->
+        <div class="badge-group">
+            <div class="badge">arm64-v8a</div>
+            <div class="badge">armeabi-v7a</div>
+            <div class="badge">x86_64</div>
+        </div>
+
         <h1 data-i18n="hero_title">Firefox Beta <span style='color: var(--firefox-orange);'>OLED</span></h1>
         <p class="subtitle" data-i18n="hero_subtitle">Eye-friendly, battery-saving, fully automated and stable pure black browser experience.</p>
         
         <div class="cta-group">
             <a href="https://github.com/KerimDemirkaynak/Firefox-Beta-OLED/releases/latest" class="btn btn-primary">
-                <i class="fa-brands fa-android"></i> <span data-i18n="btn_download">Download Latest APK</span>
+                <i class="fa-brands fa-android"></i> <span data-i18n="btn_download">Download Latest APKs</span>
             </a>
             <a href="https://github.com/KerimDemirkaynak/Firefox-Beta-OLED" target="_blank" class="btn btn-secondary">
                 <i class="fa-brands fa-github"></i> <span data-i18n="btn_github">View on GitHub</span>
@@ -297,10 +305,15 @@
     </main>
 
     <section class="main-content">
+        <!-- YENİ: Kart sayısını 4'e çıkardık -->
         <div class="grid">
             <div class="card">
                 <h3 data-i18n="card1_title"><i class="fa-solid fa-moon" style="color: var(--firefox-orange);"></i> Pure #000000</h3>
                 <p data-i18n="card1_desc">Completely turned off pixels instead of gray or dark blue tones. Provides massive energy savings and true contrast on AMOLED screens.</p>
+            </div>
+            <div class="card">
+                <h3 data-i18n="card4_title"><i class="fa-solid fa-microchip" style="color: var(--firefox-orange);"></i> Multi-Arch Support</h3>
+                <p data-i18n="card4_desc">Supports all Android devices with dedicated builds for arm64-v8a, armeabi-v7a, and x86_64 architectures.</p>
             </div>
             <div class="card">
                 <h3 data-i18n="card2_title"><i class="fa-solid fa-rotate" style="color: var(--firefox-orange);"></i> 5-Day Auto Sync</h3>
@@ -308,7 +321,7 @@
             </div>
             <div class="card">
                 <h3 data-i18n="card3_title"><i class="fa-solid fa-shield-check" style="color: var(--firefox-orange);"></i> Signed & Ready</h3>
-                <p data-i18n="card3_desc">The downloaded APK file is digitally signed. You do not need any additional tools or technical processes to install it on your device.</p>
+                <p data-i18n="card3_desc">The downloaded APK files are digitally signed. You do not need any additional tools or technical processes to install them.</p>
             </div>
         </div>
     </section>
@@ -321,69 +334,73 @@
         const translations = {
             "en": {
                 "page_title": "Firefox Beta OLED | True Black Experience",
-                "meta_desc": "Android (arm64-v8a) optimized, battery-friendly, auto-updated Firefox Beta with pure #000000 OLED dark theme.",
-                "badge": "arm64-v8a Build",
+                "meta_desc": "Android optimized (Multi-Arch), battery-friendly, auto-updated Firefox Beta with pure #000000 OLED dark theme.",
                 "hero_title": "Firefox Beta <span style='color: var(--firefox-orange);'>OLED</span>",
                 "hero_subtitle": "Eye-friendly, battery-saving, fully automated and stable pure black browser experience.",
-                "btn_download": "Download Latest APK",
+                "btn_download": "Download Latest APKs",
                 "btn_github": "View on GitHub",
                 "card1_title": "<i class='fa-solid fa-moon' style='color: var(--firefox-orange);'></i> Pure #000000",
                 "card1_desc": "Completely turned off pixels instead of gray or dark blue tones. Provides massive energy savings and true contrast on AMOLED screens.",
                 "card2_title": "<i class='fa-solid fa-rotate' style='color: var(--firefox-orange);'></i> 5-Day Auto Sync",
                 "card2_desc": "Thanks to the powerful CI automation, Mozilla FTP servers are scanned every 5 days and the latest beta version is compiled automatically.",
                 "card3_title": "<i class='fa-solid fa-shield-check' style='color: var(--firefox-orange);'></i> Signed & Ready",
-                "card3_desc": "The downloaded APK file is digitally signed. You do not need any additional tools or technical processes to install it on your device.",
+                "card3_desc": "The downloaded APK files are digitally signed. You do not need any additional tools or technical processes to install them.",
+                "card4_title": "<i class='fa-solid fa-microchip' style='color: var(--firefox-orange);'></i> Multi-Arch Support",
+                "card4_desc": "Supports all Android devices with dedicated builds for arm64-v8a, armeabi-v7a, and x86_64 architectures.",
                 "footer_text": "This project is an open source community effort. Developer: <a href='https://github.com/KerimDemirkaynak' target='_blank'>Kerim Demirkaynak</a>",
                 "lang_label": "EN"
             },
             "tr": {
                 "page_title": "Firefox Beta OLED | Gerçek Siyah Deneyimi",
-                "meta_desc": "Android (arm64-v8a) için optimize edilmiş, batarya dostu ve saf #000000 OLED siyah tema destekli otomatik güncellenen Firefox Beta.",
-                "badge": "arm64-v8a Yapısı",
+                "meta_desc": "Tüm Android cihazlar için (Çoklu Mimari), batarya dostu ve saf #000000 OLED siyah tema destekli Firefox Beta.",
                 "hero_title": "Firefox Beta <span style='color: var(--firefox-orange);'>OLED</span>",
                 "hero_subtitle": "Gözlerinizi koruyan, bataryayı yormayan tam otomatik ve stabil saf siyah tarayıcı deneyimi.",
-                "btn_download": "Son Sürüm APK İndir",
+                "btn_download": "Son Sürüm APK'ları İndir",
                 "btn_github": "GitHub'da İncele",
                 "card1_title": "<i class='fa-solid fa-moon' style='color: var(--firefox-orange);'></i> Saf #000000",
                 "card1_desc": "Gri veya koyu mavi tonlar yerine tamamen kapatılmış pikseller. AMOLED ekranlarda muazzam enerji tasarrufu ve gerçek kontrast sağlar.",
                 "card2_title": "<i class='fa-solid fa-rotate' style='color: var(--firefox-orange);'></i> 5 Günde Otomatik",
                 "card2_desc": "Arka plandaki güçlü CI otomasyonu sayesinde, Mozilla FTP sunucuları her 5 günde bir taranarak en güncel beta sürümü derlenir.",
                 "card3_title": "<i class='fa-solid fa-shield-check' style='color: var(--firefox-orange);'></i> İmzalanmış & Hazır",
-                "card3_desc": "İndirdiğiniz APK dosyası dijital olarak imzalanmıştır. Cihazınıza yüklemek için hiçbir ek araç veya teknik işleme ihtiyaç duymazsınız.",
+                "card3_desc": "İndirdiğiniz APK dosyaları dijital olarak imzalanmıştır. Cihazınıza yüklemek için hiçbir ek araç veya teknik işleme ihtiyaç duymazsınız.",
+                "card4_title": "<i class='fa-solid fa-microchip' style='color: var(--firefox-orange);'></i> Çoklu Mimari",
+                "card4_desc": "arm64-v8a, armeabi-v7a ve x86_64 mimarileri için özel derlemeler ile tüm Android cihazları destekler.",
                 "footer_text": "Bu proje açık kaynaklı bir topluluk çalışmasıdır. Geliştirici: <a href='https://github.com/KerimDemirkaynak' target='_blank'>Kerim Demirkaynak</a>",
                 "lang_label": "TR"
             },
             "de": {
                 "page_title": "Firefox Beta OLED | Echtes Schwarz-Erlebnis",
-                "meta_desc": "Für Android (arm64-v8a) optimierter, akkuschonender Firefox Beta mit reinem #000000 OLED Dark Theme.",
-                "badge": "arm64-v8a Build",
+                "meta_desc": "Für alle Android-Geräte optimierter (Multi-Arch), akkuschonender Firefox Beta mit reinem #000000 Dark Theme.",
                 "hero_title": "Firefox Beta <span style='color: var(--firefox-orange);'>OLED</span>",
                 "hero_subtitle": "Augenfreundliches, akkuschonendes, vollautomatisches und stabiles reines schwarzes Browser-Erlebnis.",
-                "btn_download": "Neueste APK laden",
+                "btn_download": "Neueste APKs laden",
                 "btn_github": "Auf GitHub ansehen",
                 "card1_title": "<i class='fa-solid fa-moon' style='color: var(--firefox-orange);'></i> Reines #000000",
                 "card1_desc": "Komplett abgeschaltete Pixel statt Grau- oder Dunkelblautönen. Bietet massive Energieeinsparungen auf AMOLED-Bildschirmen.",
                 "card2_title": "<i class='fa-solid fa-rotate' style='color: var(--firefox-orange);'></i> 5-Tage Auto-Sync",
                 "card2_desc": "Dank der leistungsstarken CI-Automatisierung werden Mozilla-FTP-Server alle 5 Tage gescannt und die neueste Beta kompiliert.",
                 "card3_title": "<i class='fa-solid fa-shield-check' style='color: var(--firefox-orange);'></i> Signiert & Bereit",
-                "card3_desc": "Die APK-Datei ist digital signiert. Sie benötigen keine zusätzlichen Tools, um sie auf Ihrem Gerät zu installieren.",
+                "card3_desc": "Die APK-Dateien sind digital signiert. Sie benötigen keine zusätzlichen Tools, um sie auf Ihrem Gerät zu installieren.",
+                "card4_title": "<i class='fa-solid fa-microchip' style='color: var(--firefox-orange);'></i> Multi-Arch Support",
+                "card4_desc": "Unterstützt alle Android-Geräte mit dedizierten Builds für die Architekturen arm64-v8a, armeabi-v7a und x86_64.",
                 "footer_text": "Dieses Projekt ist ein Open-Source-Community-Projekt. Entwickler: <a href='https://github.com/KerimDemirkaynak' target='_blank'>Kerim Demirkaynak</a>",
                 "lang_label": "DE"
             },
             "es": {
                 "page_title": "Firefox Beta OLED | Experiencia Negra Verdadera",
-                "meta_desc": "Firefox Beta optimizado para Android (arm64-v8a) con tema oscuro OLED puro #000000.",
-                "badge": "Compilación arm64-v8a",
+                "meta_desc": "Firefox Beta optimizado para Android (Multi-Arch) con tema oscuro OLED puro #000000.",
                 "hero_title": "Firefox Beta <span style='color: var(--firefox-orange);'>OLED</span>",
                 "hero_subtitle": "Experiencia de navegación en negro puro, amigable a la vista y con ahorro de batería.",
-                "btn_download": "Descargar Última APK",
+                "btn_download": "Descargar Últimas APKs",
                 "btn_github": "Ver en GitHub",
                 "card1_title": "<i class='fa-solid fa-moon' style='color: var(--firefox-orange);'></i> Puro #000000",
                 "card1_desc": "Píxeles completamente apagados en lugar de tonos grises. Proporciona un ahorro de energía masivo en pantallas AMOLED.",
                 "card2_title": "<i class='fa-solid fa-rotate' style='color: var(--firefox-orange);'></i> Sincronización 5 Días",
                 "card2_desc": "Gracias a la automatización CI, los servidores FTP de Mozilla se escanean cada 5 días y se compila la última versión beta.",
                 "card3_title": "<i class='fa-solid fa-shield-check' style='color: var(--firefox-orange);'></i> Firmado y Listo",
-                "card3_desc": "El archivo APK está firmado digitalmente. No necesita herramientas adicionales para instalarlo en su dispositivo.",
+                "card3_desc": "Los archivos APK están firmados digitalmente. No necesita herramientas adicionales para instalarlos.",
+                "card4_title": "<i class='fa-solid fa-microchip' style='color: var(--firefox-orange);'></i> Soporte Multi-Arch",
+                "card4_desc": "Soporta todos los dispositivos Android con compilaciones para arquitecturas arm64-v8a, armeabi-v7a y x86_64.",
                 "footer_text": "Este proyecto es un esfuerzo de la comunidad de código abierto. Desarrollador: <a href='https://github.com/KerimDemirkaynak' target='_blank'>Kerim Demirkaynak</a>",
                 "lang_label": "ES"
             }
@@ -395,15 +412,12 @@
             document.documentElement.lang = langCode;
             document.title = translations[langCode]["page_title"];
             
-            // Hap üzerindeki metni (TR/EN/DE) güncelle
             document.getElementById("current-lang-text").innerText = translations[langCode]["lang_label"];
             
-            // Meta Tagleri Güncelleme (Arama motorları için)
             document.getElementById("meta-desc").content = translations[langCode]["meta_desc"];
             document.getElementById("og-title").content = translations[langCode]["page_title"];
             document.getElementById("og-desc").content = translations[langCode]["meta_desc"];
 
-            // Arayüz metinlerini güncelleme
             document.querySelectorAll("[data-i18n]").forEach(el => {
                 const key = el.getAttribute("data-i18n");
                 if (translations[langCode][key]) {
@@ -411,16 +425,13 @@
                 }
             });
 
-            // Arka plandaki select değerini eşitle (kullanıcı cihaz dilinden dolayı değişmişse)
             document.getElementById("lang-select").value = langCode;
         }
 
-        // Tarayıcı dilini tespit edip uygun olanı seçme
         document.addEventListener("DOMContentLoaded", () => {
             const userLangFull = navigator.language || navigator.userLanguage;
             const userLangShort = userLangFull.split('-')[0].toLowerCase();
             
-            // Desteklenen diller arasında var mı kontrol et, yoksa İngilizce kullan
             const targetLang = translations[userLangShort] ? userLangShort : 'en';
             changeLanguage(targetLang);
         });
