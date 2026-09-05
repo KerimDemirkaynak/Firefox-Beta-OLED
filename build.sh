@@ -30,6 +30,41 @@ if [ -n "$NC" ]; then
   echo "[OLED] NovaColors dark surfaces -> black"
 fi
 
+# ============================================================
+# PRIVATE / INCOGNITO OLED 
+# ============================================================
+
+# 1) fx_mobile_private_surface -> black
+#    Private window background + status bar (the huge solid
+#    #180E30 region) via HomepageEdgeToEdgeFeature.
+for C in fenix-patched/res/values/colors.xml fenix-patched/res/values-night/colors.xml; do
+  if [ -f "$C" ]; then
+    sed -i 's/<color name="fx_mobile_private_surface">.*/<color name="fx_mobile_private_surface">#ff000000<\/color>/g' "$C"
+    echo "[OLED] $C: fx_mobile_private_surface -> black"
+  fi
+done
+
+# 2) NovaColors dark-violet family -> black
+#    Private scheme surfaces: toolbar #281D44=VioletDesaturated80,
+#    home #180E30=VioletDesaturated90, all fields NUCLEAR blackens.
+if [ -n "$NC" ]; then
+  sed -i 's/ff180e30/ff000000/g; s/ff281d44/ff000000/g; s/ff3e315f/ff000000/g; s/ff584a7d/ff000000/g; s/ff3e2976/ff000000/g; s/ff5939a8/ff000000/g; s/80180e30/ff000000/g; s/b2180e30/ff000000/g; s/80711d08/ff000000/g' "$NC"
+  echo "[OLED] NovaColors violet family -> black"
+fi
+
+# 3) AcornColorsKt private palette + private scheme inline colors -> black
+#    #11042B = private layerGradientStart + surfaceContainer color,
+#    #20163A / #0D0321 = private scheme surfaces.
+AC=$(find fenix-patched -path '*/mozilla/components/compose/base/theme/AcornColorsKt.smali' | head -n1)
+if [ -n "$AC" ]; then
+  sed -i 's/0xff11042b/0xff000000/g; s/0xff20163a/0xff000000/g; s/0xff0d0321/0xff000000/g' "$AC"
+  echo "[OLED] AcornColorsKt private colors -> black"
+fi
+
+# ============================================================
+# END private / incognito OLED
+# ============================================================
+
 # M3 dark defaults: Background/Surface/SurfaceDim (PaletteTokens.Neutral6) -> black
 CDT=$(find fenix-patched -path '*/androidx/compose/material3/tokens/ColorDarkTokens.smali' | head -n1)
 if [ -n "$CDT" ]; then
